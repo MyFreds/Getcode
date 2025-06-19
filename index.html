@@ -6,11 +6,8 @@
     <title>GetCode Freds</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/dracula.min.css">
 </head>
 <body>
-    <!-- Navbar -->
     <nav class="navbar">
         <div class="navbar-left">
             <button class="burger-btn">
@@ -23,32 +20,17 @@
                 <a href="#">Premium Website</a>
             </div>
         </div>
-        <div class="navbar-right">
-            <button class="add-post-btn">
-                <i class="fas fa-plus"></i> Add Post
-            </button>
-            <div class="profile">
-                <img src="https://via.placeholder.com/40" alt="Profile" class="profile-img">
-            </div>
-        </div>
+        <button class="add-post-btn">
+            <i class="fas fa-plus"></i> Add Post
+        </button>
     </nav>
 
-    <!-- Mobile Menu -->
-    <div class="mobile-menu">
-        <a href="#" class="active">Home</a>
-        <a href="#">About</a>
-        <a href="#">Portfolio</a>
-        <a href="#">Premium Website</a>
-    </div>
-
-    <!-- Main Content -->
     <main class="container">
         <div class="hero">
             <h1><span class="blue-text">GetCode</span> Freds</h1>
             <p>Kumpulan code yang pernah saya upload di TikTok <a href="https://tiktok.com/@code.freds" target="_blank">@code.freds</a></p>
         </div>
 
-        <!-- Search Bar -->
         <div class="search-container">
             <input type="text" id="search-input" placeholder="Search by title...">
             <i class="fas fa-search"></i>
@@ -56,20 +38,16 @@
 
         <div class="divider"></div>
 
-        <!-- Latest Uploads -->
         <h2 class="section-title">Terbaru di Upload</h2>
-        <div class="latest-uploads" id="latest-uploads">
-            <div class="scroll-container">
-                <!-- Latest posts will be added here dynamically -->
-            </div>
+        <div class="new-uploads" id="new-uploads">
+            <!-- Content will be loaded via JavaScript -->
         </div>
 
         <div class="divider"></div>
 
-        <!-- All Posts -->
         <h2 class="section-title">Semua Postingan</h2>
         <div class="all-posts" id="all-posts">
-            <!-- All posts will be added here dynamically -->
+            <!-- Content will be loaded via JavaScript -->
         </div>
         <button class="load-more" id="load-more">Load More</button>
     </main>
@@ -79,18 +57,41 @@
         <div class="modal-content">
             <span class="close-btn">&times;</span>
             <h2 id="modal-title"></h2>
-            <div class="poster-info">
-                <img src="https://via.placeholder.com/40" alt="Profile" class="profile-img">
-                <span class="username">code.freds</span>
-                <i class="fas fa-check-circle verified"></i>
+            <div class="uploader-info">
+                <img src="https://via.placeholder.com/40" alt="Profile" class="profile-pic">
+                <span class="username">code.freds <i class="fas fa-check-circle verified"></i></span>
                 <span class="upload-date" id="modal-date"></span>
             </div>
-            <div class="modal-thumbnail">
-                <img id="modal-thumbnail" src="" alt="Thumbnail">
-            </div>
-            <div class="post-description" id="modal-description"></div>
-            <div class="code-boxes" id="code-boxes">
-                <!-- Code boxes will be added here dynamically -->
+            <img src="" alt="Thumbnail" class="modal-thumbnail" id="modal-thumbnail">
+            <div class="modal-description" id="modal-description"></div>
+            <div class="code-boxes">
+                <div class="code-box" id="html-box">
+                    <div class="code-header">
+                        <span>HTML</span>
+                        <button class="copy-btn" onclick="copyCode('html-code')">
+                            <i class="far fa-copy"></i>
+                        </button>
+                    </div>
+                    <pre><code id="html-code"></code></pre>
+                </div>
+                <div class="code-box" id="css-box">
+                    <div class="code-header">
+                        <span>CSS</span>
+                        <button class="copy-btn" onclick="copyCode('css-code')">
+                            <i class="far fa-copy"></i>
+                        </button>
+                    </div>
+                    <pre><code id="css-code"></code></pre>
+                </div>
+                <div class="code-box" id="js-box">
+                    <div class="code-header">
+                        <span>JavaScript</span>
+                        <button class="copy-btn" onclick="copyCode('js-code')">
+                            <i class="far fa-copy"></i>
+                        </button>
+                    </div>
+                    <pre><code id="js-code"></code></pre>
+                </div>
             </div>
             <a href="#" class="demo-btn" id="demo-btn" target="_blank">
                 <i class="fas fa-external-link-alt"></i> Demo
@@ -98,60 +99,44 @@
         </div>
     </div>
 
-    <!-- Password Modal -->
-    <div class="modal" id="password-modal">
-        <div class="modal-content password-modal">
-            <h2>Enter Password</h2>
-            <div class="password-input">
-                <input type="password" id="password-field" placeholder="Enter password">
-                <button id="submit-password"><i class="fas fa-arrow-right"></i></button>
-            </div>
-            <p class="notes">Note: You need to enter the password first to access the Add Post feature.</p>
-            <a href="https://wa.me/6285212244077" class="get-password" target="_blank">
-                <i class="fab fa-whatsapp"></i> Get Password
-            </a>
-        </div>
-    </div>
-
     <!-- Add Post Modal -->
     <div class="modal" id="add-post-modal">
-        <div class="modal-content add-post-modal">
+        <div class="modal-content">
             <span class="close-btn">&times;</span>
-            <h2>Add New Post</h2>
-            <div class="upload-history" id="upload-history">
-                <h3>Your Upload History</h3>
-                <div class="history-container">
-                    <!-- Upload history will be added here dynamically -->
+            <div id="password-section">
+                <h2>Enter Password</h2>
+                <div class="password-input">
+                    <input type="password" id="post-password" placeholder="Enter password...">
+                    <button id="submit-password"><i class="fas fa-arrow-right"></i></button>
                 </div>
+                <p class="password-note">Note: You need to enter the correct password to add a post.</p>
+                <p class="get-password">
+                    <a href="https://wa.me/6285212244077?text=Saya%20ingin%20mendapatkan%20password" target="_blank">
+                        <i class="fab fa-whatsapp"></i> Get Password
+                    </a>
+                </p>
             </div>
-            <div class="add-post-form" id="add-post-form">
-                <div class="form-group">
-                    <label for="thumbnail-url">Thumbnail URL</label>
-                    <input type="text" id="thumbnail-url" placeholder="https://example.com/image.jpg">
+            <div id="add-post-section" style="display: none;">
+                <div class="add-post-icon">
+                    <i class="fas fa-plus" id="show-post-form"></i>
                 </div>
-                <div class="form-group">
-                    <label for="post-title">Title</label>
-                    <input type="text" id="post-title" placeholder="Enter title">
+                <div id="post-form" style="display: none;">
+                    <input type="text" id="post-image" placeholder="Image URL">
+                    <input type="text" id="post-title" placeholder="Title">
+                    <textarea id="post-description" placeholder="Description... Use <code> for code blocks and <link> for links"></textarea>
+                    <input type="text" id="post-demo" placeholder="Demo URL">
+                    <button id="upload-post">Upload Sekarang</button>
                 </div>
-                <div class="form-group">
-                    <label for="post-description">Description</label>
-                    <textarea id="post-description" placeholder="Enter description. Use <code> for code blocks and <link> for links"></textarea>
+                <div id="history-section">
+                    <h3>History Upload</h3>
+                    <div class="history-posts" id="history-posts">
+                        <!-- History posts will be loaded here -->
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="demo-link">Demo Link</label>
-                    <input type="text" id="demo-link" placeholder="https://example.com">
-                </div>
-                <button class="upload-btn" id="upload-post">Upload Sekarang</button>
             </div>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/htmlmixed/htmlmixed.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/css/css.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/closetag.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/closebrackets.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
