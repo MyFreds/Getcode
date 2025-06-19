@@ -1,484 +1,416 @@
-document.addEventListener('DOMContentLoaded', function() {
-    // DOM Elements
-    const burgerBtn = document.querySelector('.burger-btn');
-    const mobileMenu = document.querySelector('.mobile-menu');
-    const addPostBtn = document.querySelector('.add-post-btn');
-    const passwordModal = document.getElementById('password-modal');
-    const passwordField = document.getElementById('password-field');
-    const submitPassword = document.getElementById('submit-password');
-    const addPostModal = document.getElementById('add-post-modal');
-    const postModal = document.getElementById('post-modal');
-    const closeBtns = document.querySelectorAll('.close-btn');
-    const latestUploads = document.getElementById('latest-uploads');
-    const allPosts = document.getElementById('all-posts');
-    const loadMoreBtn = document.getElementById('load-more');
-    const searchInput = document.getElementById('search-input');
-    const uploadPostBtn = document.getElementById('upload-post');
-    const uploadHistory = document.querySelector('.history-container');
-    const addPostForm = document.getElementById('add-post-form');
-    
-    // Sample data (in a real app, this would come from a database)
-    let posts = [
-        {
-            id: '1',
-            title: 'Responsive Navbar with CSS Grid',
-            thumbnail: 'https://via.placeholder.com/600x400/252525/3498db?text=Navbar',
-            description: 'Learn how to create a responsive navbar using CSS Grid. This example shows how to make a navbar that works on all devices.<code><nav>\n  <div class="logo">Logo</div>\n  <div class="nav-links">\n    <a href="#">Home</a>\n    <a href="#">About</a>\n    <a href="#">Contact</a>\n  </div>\n</nav></code>',
-            demoLink: 'https://example.com/demo1',
-            date: '2023-06-15'
-        },
-        {
-            id: '2',
-            title: 'Animated Button Hover Effects',
-            thumbnail: 'https://via.placeholder.com/600x400/252525/3498db?text=Button',
-            description: 'Create beautiful button hover effects with CSS animations. This tutorial covers 5 different effects you can use in your projects.<code>.btn {\n  padding: 12px 24px;\n  background: #3498db;\n  color: white;\n  border: none;\n  border-radius: 4px;\n  cursor: pointer;\n  transition: all 0.3s ease;\n}\n\n.btn:hover {\n  transform: translateY(-3px);\n  box-shadow: 0 10px 20px rgba(0,0,0,0.1);\n}</code>',
-            demoLink: 'https://example.com/demo2',
-            date: '2023-06-10'
-        },
-        {
-            id: '3',
-            title: 'Dark/Light Mode Toggle',
-            thumbnail: 'https://via.placeholder.com/600x400/252525/3498db?text=Toggle',
-            description: 'Implement a dark/light mode toggle for your website using CSS variables and JavaScript.<code>// CSS\n:root {\n  --bg-color: #ffffff;\n  --text-color: #333333;\n}\n\n[data-theme="dark"] {\n  --bg-color: #1a1a1a;\n  --text-color: #ffffff;\n}\n\nbody {\n  background-color: var(--bg-color);\n  color: var(--text-color);\n}</code>',
-            demoLink: 'https://example.com/demo3',
-            date: '2023-06-05'
-        },
-        {
-            id: '4',
-            title: 'Custom Scrollbar Design',
-            thumbnail: 'https://via.placeholder.com/600x400/252525/3498db?text=Scrollbar',
-            description: 'How to customize your website scrollbar with CSS for a more polished look.<code>/* Works on Firefox */\n* {\n  scrollbar-width: thin;\n  scrollbar-color: #3498db #252525;\n}\n\n/* Works on Chrome, Edge, and Safari */\n*::-webkit-scrollbar {\n  width: 8px;\n}\n\n*::-webkit-scrollbar-track {\n  background: #252525;\n}\n\n*::-webkit-scrollbar-thumb {\n  background-color: #3498db;\n  border-radius: 20px;\n}</code>',
-            demoLink: 'https://example.com/demo4',
-            date: '2023-05-28'
-        },
-        {
-            id: '5',
-            title: 'CSS Only Loading Spinner',
-            thumbnail: 'https://via.placeholder.com/600x400/252525/3498db?text=Spinner',
-            description: 'Create a loading spinner using only CSS, no JavaScript required.<code>.spinner {\n  width: 40px;\n  height: 40px;\n  border: 4px solid rgba(0, 0, 0, 0.1);\n  border-radius: 50%;\n  border-left-color: #3498db;\n  animation: spin 1s linear infinite;\n}\n\n@keyframes spin {\n  0% { transform: rotate(0deg); }\n  100% { transform: rotate(360deg); }\n}</code>',
-            demoLink: 'https://example.com/demo5',
-            date: '2023-05-20'
-        }
-    ];
-    
-    let displayedPosts = 5;
-    const postsPerLoad = 5;
-    let filteredPosts = [...posts];
-    let currentPostId = null;
-    
-    // Check if password is saved in localStorage
-    if (localStorage.getItem('postPassword')) {
-        addPostBtn.addEventListener('click', function() {
-            addPostModal.style.display = 'block';
-            loadUploadHistory();
-        });
-    } else {
-        addPostBtn.addEventListener('click', function() {
-            passwordModal.style.display = 'block';
-        });
+// Sample data for posts
+let posts = [
+    {
+        id: '1',
+        title: 'Responsive Navbar with Burger Menu',
+        description: 'Learn how to create a responsive navbar with burger menu for mobile devices. Perfect for modern websites! <code>const burger = document.querySelector(".burger");</code> <link>[View more tutorials](https://example.com)</link>',
+        image: 'https://via.placeholder.com/800x450?text=Responsive+Navbar',
+        date: '2023-05-15',
+        htmlCode: '<nav class="navbar">\n  <div class="logo">Logo</div>\n  <div class="burger">☰</div>\n  <div class="nav-links">\n    <a href="#">Home</a>\n    <a href="#">About</a>\n  </div>\n</nav>',
+        cssCode: '.navbar {\n  display: flex;\n  justify-content: space-between;\n  padding: 1rem;\n}\n\n.burger {\n  display: none;\n}\n\n@media (max-width: 768px) {\n  .burger {\n    display: block;\n  }\n}',
+        jsCode: 'const burger = document.querySelector(".burger");\nconst navLinks = document.querySelector(".nav-links");\n\nburger.addEventListener("click", () => {\n  navLinks.classList.toggle("active");\n});',
+        demoLink: 'https://example.com/demo1'
+    },
+    {
+        id: '2',
+        title: 'CSS Grid Layout Tutorial',
+        description: 'Master CSS Grid with this comprehensive tutorial. Create complex layouts easily with CSS Grid! <code>.container { display: grid; }</code>',
+        image: 'https://via.placeholder.com/800x450?text=CSS+Grid',
+        date: '2023-05-10',
+        htmlCode: '<div class="container">\n  <div class="item">1</div>\n  <div class="item">2</div>\n  <div class="item">3</div>\n</div>',
+        cssCode: '.container {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  gap: 1rem;\n}\n\n.item {\n  background: #eee;\n  padding: 1rem;\n}',
+        jsCode: '// No JavaScript required for basic grid',
+        demoLink: 'https://example.com/demo2'
+    },
+    {
+        id: '3',
+        title: 'JavaScript Fetch API',
+        description: 'Learn how to use Fetch API to get data from servers. Modern alternative to XMLHttpRequest. <code>fetch("url").then(res => res.json())</code>',
+        image: 'https://via.placeholder.com/800x450?text=Fetch+API',
+        date: '2023-05-05',
+        htmlCode: '<button id="fetch-btn">Fetch Data</button>\n<div id="result"></div>',
+        cssCode: '#result {\n  margin-top: 1rem;\n  padding: 1rem;\n  border: 1px solid #ddd;\n}',
+        jsCode: 'document.getElementById("fetch-btn").addEventListener("click", () => {\n  fetch("https://api.example.com/data")\n    .then(response => response.json())\n    .then(data => {\n      document.getElementById("result").textContent = JSON.stringify(data);\n    });\n});',
+        demoLink: 'https://example.com/demo3'
     }
-    
-    // Burger button click event
-    burgerBtn.addEventListener('click', function() {
-        mobileMenu.style.display = mobileMenu.style.display === 'flex' ? 'none' : 'flex';
+];
+
+// DOM Elements
+const burgerBtn = document.querySelector('.burger-btn');
+const navLinks = document.querySelector('.nav-links');
+const addPostBtn = document.querySelector('.add-post-btn');
+const newUploadsContainer = document.getElementById('new-uploads');
+const allPostsContainer = document.getElementById('all-posts');
+const loadMoreBtn = document.getElementById('load-more');
+const searchInput = document.getElementById('search-input');
+const postModal = document.getElementById('post-modal');
+const addPostModal = document.getElementById('add-post-modal');
+const passwordSection = document.getElementById('password-section');
+const addPostSection = document.getElementById('add-post-section');
+const postForm = document.getElementById('post-form');
+const showPostFormBtn = document.getElementById('show-post-form');
+const uploadPostBtn = document.getElementById('upload-post');
+const historyPostsContainer = document.getElementById('history-posts');
+const submitPasswordBtn = document.getElementById('submit-password');
+const postPasswordInput = document.getElementById('post-password');
+
+// Variables
+let visiblePosts = 6;
+const postsPerLoad = 6;
+const CORRECT_PASSWORD = 'posting123';
+
+// Initialize the app
+function init() {
+    renderNewUploads();
+    renderAllPosts();
+    setupEventListeners();
+    checkSavedPassword();
+}
+
+// Set up event listeners
+function setupEventListeners() {
+    // Burger button click
+    burgerBtn.addEventListener('click', () => {
+        navLinks.classList.toggle('active');
     });
-    
-    // Close modals when clicking on X button
-    closeBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            const modal = this.closest('.modal');
-            modal.style.display = 'none';
+
+    // Add post button click
+    addPostBtn.addEventListener('click', () => {
+        addPostModal.style.display = 'block';
+    });
+
+    // Close modal buttons
+    document.querySelectorAll('.close-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            postModal.style.display = 'none';
+            addPostModal.style.display = 'none';
         });
     });
-    
-    // Close modals when clicking outside
-    window.addEventListener('click', function(e) {
-        if (e.target.classList.contains('modal')) {
-            e.target.style.display = 'none';
+
+    // Click outside modal to close
+    window.addEventListener('click', (e) => {
+        if (e.target === postModal) {
+            postModal.style.display = 'none';
+        }
+        if (e.target === addPostModal) {
+            addPostModal.style.display = 'none';
         }
     });
-    
+
+    // Load more button click
+    loadMoreBtn.addEventListener('click', () => {
+        visiblePosts += postsPerLoad;
+        renderAllPosts();
+    });
+
+    // Search input event
+    searchInput.addEventListener('input', () => {
+        renderAllPosts();
+    });
+
+    // Show post form
+    showPostFormBtn.addEventListener('click', () => {
+        postForm.style.display = 'flex';
+        showPostFormBtn.style.display = 'none';
+    });
+
+    // Upload post
+    uploadPostBtn.addEventListener('click', uploadPost);
+
     // Submit password
-    submitPassword.addEventListener('click', function() {
-        const password = passwordField.value.trim();
-        // In a real app, you would verify the password with a server
-        if (password) {
-            localStorage.setItem('postPassword', password);
-            passwordModal.style.display = 'none';
-            addPostModal.style.display = 'block';
-            loadUploadHistory();
+    submitPasswordBtn.addEventListener('click', checkPassword);
+    postPasswordInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            checkPassword();
         }
     });
+}
+
+// Check if password is saved in localStorage
+function checkSavedPassword() {
+    const savedPassword = localStorage.getItem('postPassword');
+    if (savedPassword === CORRECT_PASSWORD) {
+        passwordSection.style.display = 'none';
+        addPostSection.style.display = 'block';
+        renderHistoryPosts();
+    }
+}
+
+// Check password for add post
+function checkPassword() {
+    const password = postPasswordInput.value;
+    if (password === CORRECT_PASSWORD) {
+        localStorage.setItem('postPassword', password);
+        passwordSection.style.display = 'none';
+        addPostSection.style.display = 'block';
+        renderHistoryPosts();
+    } else {
+        alert('Incorrect password!');
+    }
+}
+
+// Render new uploads section
+function renderNewUploads() {
+    newUploadsContainer.innerHTML = '';
     
-    // Load more posts
-    loadMoreBtn.addEventListener('click', function() {
-        displayedPosts += postsPerLoad;
-        renderPosts();
-        if (displayedPosts >= filteredPosts.length) {
-            loadMoreBtn.style.display = 'none';
-        }
+    // Sort by date (newest first) and take first 3
+    const newestPosts = [...posts].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 3);
+    
+    newestPosts.forEach(post => {
+        const postElement = createPostCard(post);
+        postElement.style.minWidth = '300px';
+        newUploadsContainer.appendChild(postElement);
     });
+}
+
+// Render all posts section
+function renderAllPosts() {
+    allPostsContainer.innerHTML = '';
     
-    // Search functionality
-    searchInput.addEventListener('input', function() {
-        const searchTerm = this.value.toLowerCase();
+    const searchTerm = searchInput.value.toLowerCase();
+    let filteredPosts = posts;
+    
+    if (searchTerm) {
         filteredPosts = posts.filter(post => 
             post.title.toLowerCase().includes(searchTerm) || 
             post.description.toLowerCase().includes(searchTerm)
         );
-        displayedPosts = postsPerLoad;
-        renderPosts();
-        loadMoreBtn.style.display = filteredPosts.length > displayedPosts ? 'block' : 'none';
-    });
-    
-    // Upload new post
-    uploadPostBtn.addEventListener('click', function() {
-        const thumbnailUrl = document.getElementById('thumbnail-url').value.trim();
-        const title = document.getElementById('post-title').value.trim();
-        const description = document.getElementById('post-description').value.trim();
-        const demoLink = document.getElementById('demo-link').value.trim();
-        
-        if (!thumbnailUrl || !title || !description || !demoLink) {
-            alert('Please fill all fields');
-            return;
-        }
-        
-        const newPost = {
-            id: Date.now().toString(),
-            title,
-            thumbnail: thumbnailUrl,
-            description,
-            demoLink,
-            date: new Date().toISOString().split('T')[0]
-        };
-        
-        posts.unshift(newPost);
-        filteredPosts.unshift(newPost);
-        
-        // Clear form
-        document.getElementById('thumbnail-url').value = '';
-        document.getElementById('post-title').value = '';
-        document.getElementById('post-description').value = '';
-        document.getElementById('demo-link').value = '';
-        
-        // Update UI
-        renderPosts();
-        loadUploadHistory();
-        addPostModal.style.display = 'none';
-    });
-    
-    // Render posts to the UI
-    function renderPosts() {
-        // Clear existing posts
-        latestUploads.querySelector('.scroll-container').innerHTML = '';
-        allPosts.innerHTML = '';
-        
-        // Render latest uploads (first 3 posts)
-        const latest = filteredPosts.slice(0, 3);
-        latest.forEach(post => {
-            latestUploads.querySelector('.scroll-container').appendChild(createPostCard(post));
-        });
-        
-        // Render all posts (up to displayedPosts count)
-        const visiblePosts = filteredPosts.slice(0, displayedPosts);
-        visiblePosts.forEach(post => {
-            allPosts.appendChild(createPostCard(post));
-        });
-        
-        // Show/hide load more button
-        loadMoreBtn.style.display = filteredPosts.length > displayedPosts ? 'block' : 'none';
-        
-        // Add click events to post cards
-        document.querySelectorAll('.post-card').forEach(card => {
-            card.addEventListener('click', function() {
-                const postId = this.getAttribute('data-id');
-                openPostModal(postId);
-            });
-        });
     }
     
-    // Create post card element
-    function createPostCard(post) {
-        const card = document.createElement('div');
-        card.className = 'post-card';
-        card.setAttribute('data-id', post.id);
+    // Sort by date (newest first)
+    filteredPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    const postsToShow = filteredPosts.slice(0, visiblePosts);
+    
+    if (postsToShow.length === 0) {
+        allPostsContainer.innerHTML = '<p>No posts found.</p>';
+        loadMoreBtn.style.display = 'none';
+        return;
+    }
+    
+    postsToShow.forEach(post => {
+        const postElement = createPostCard(post);
+        allPostsContainer.appendChild(postElement);
+    });
+    
+    loadMoreBtn.style.display = filteredPosts.length > visiblePosts ? 'block' : 'none';
+}
+
+// Create post card element
+function createPostCard(post) {
+    const postCard = document.createElement('div');
+    postCard.className = 'post-card';
+    postCard.dataset.id = post.id;
+    
+    postCard.innerHTML = `
+        <img src="${post.image}" alt="${post.title}" class="post-thumbnail">
+        <div class="post-info">
+            <h3 class="post-title">${post.title}</h3>
+            <p class="post-date">Uploaded at ${formatDate(post.date)}</p>
+        </div>
+    `;
+    
+    postCard.addEventListener('click', () => openPostModal(post));
+    return postCard;
+}
+
+// Render history posts
+function renderHistoryPosts() {
+    historyPostsContainer.innerHTML = '';
+    
+    if (posts.length === 0) {
+        historyPostsContainer.innerHTML = '<p>No posts uploaded yet.</p>';
+        return;
+    }
+    
+    // Sort by date (newest first)
+    const sortedPosts = [...posts].sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    sortedPosts.forEach(post => {
+        const historyPost = document.createElement('div');
+        historyPost.className = 'history-post';
+        historyPost.dataset.id = post.id;
         
-        card.innerHTML = `
-            <div class="post-thumbnail">
-                <img src="${post.thumbnail}" alt="${post.title}">
+        historyPost.innerHTML = `
+            <div class="history-actions">
+                <button class="edit-post"><i class="fas fa-edit"></i></button>
+                <button class="delete-post"><i class="fas fa-trash"></i></button>
             </div>
-            <div class="post-info">
-                <h3 class="post-title">${post.title}</h3>
-                <p class="post-date">Uploaded at ${formatDate(post.date)}</p>
-            </div>
+            <img src="${post.image}" alt="${post.title}" class="history-thumbnail">
+            <div class="history-title">${post.title}</div>
         `;
         
-        return card;
-    }
-    
-    // Open post modal
-    function openPostModal(postId) {
-        currentPostId = postId;
-        const post = posts.find(p => p.id === postId);
-        
-        if (!post) return;
-        
-        // Update URL
-        history.pushState(null, null, `?id=${postId}`);
-        
-        // Set modal content
-        document.getElementById('modal-title').textContent = post.title;
-        document.getElementById('modal-date').textContent = formatDate(post.date);
-        document.getElementById('modal-thumbnail').src = post.thumbnail;
-        document.getElementById('modal-thumbnail').alt = post.title;
-        document.getElementById('demo-btn').href = post.demoLink;
-        
-        // Process description with code and link tags
-        let description = post.description;
-        
-        // Replace <code> tags with proper formatting
-        description = description.replace(/<code>([\s\S]*?)<\/code>/g, function(match, code) {
-            return `<div class="code-box">
-                <div class="code-header">
-                    <span>Code</span>
-                    <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copy</button>
-                </div>
-                <textarea class="code-content" style="display: none;">${escapeHtml(code)}</textarea>
-            </div>`;
+        historyPost.querySelector('.edit-post').addEventListener('click', (e) => {
+            e.stopPropagation();
+            editPost(post.id);
         });
         
-        // Replace <link> tags with proper links
-        description = description.replace(/<link>\[([^\]]+)\]\(([^)]+)\)<\/link>/g, '<a href="$2" target="_blank">$1</a>');
-        
-        // Set description
-        document.getElementById('modal-description').innerHTML = description;
-        
-        // Initialize CodeMirror for code boxes
-        document.querySelectorAll('.code-box').forEach(box => {
-            const textarea = box.querySelector('.code-content');
-            const code = textarea.value;
-            
-            // Remove the textarea
-            box.removeChild(textarea);
-            
-            // Create a new div for CodeMirror
-            const editorDiv = document.createElement('div');
-            box.appendChild(editorDiv);
-            
-            // Initialize CodeMirror
-            const editor = CodeMirror(editorDiv, {
-                value: code,
-                mode: 'htmlmixed',
-                theme: 'dracula',
-                lineNumbers: true,
-                readOnly: true,
-                lineWrapping: true
-            });
-            
-            // Set height based on content
-            const lineCount = editor.lineCount();
-            editor.setSize(null, lineCount * 20 + 20); // 20px per line + padding
+        historyPost.querySelector('.delete-post').addEventListener('click', (e) => {
+            e.stopPropagation();
+            deletePost(post.id);
         });
         
-        // Show modal
-        postModal.style.display = 'block';
+        historyPostsContainer.appendChild(historyPost);
+    });
+}
+
+// Open post modal
+function openPostModal(post) {
+    const modalTitle = document.getElementById('modal-title');
+    const modalDate = document.getElementById('modal-date');
+    const modalThumbnail = document.getElementById('modal-thumbnail');
+    const modalDescription = document.getElementById('modal-description');
+    const demoBtn = document.getElementById('demo-btn');
+    const htmlCode = document.getElementById('html-code');
+    const cssCode = document.getElementById('css-code');
+    const jsCode = document.getElementById('js-code');
+    
+    modalTitle.textContent = post.title;
+    modalDate.textContent = `Uploaded at ${formatDate(post.date)}`;
+    modalThumbnail.src = post.image;
+    modalThumbnail.alt = post.title;
+    
+    // Process description with code and link tags
+    let description = post.description;
+    
+    // Replace <code> tags
+    description = description.replace(/<code>(.*?)<\/code>/gs, '<span class="code-inline">$1</span>');
+    
+    // Replace <link> tags
+    description = description.replace(/<link>\[(.*?)\]\((.*?)\)<\/link>/gs, '<a href="$2" target="_blank">$1</a>');
+    
+    modalDescription.innerHTML = description;
+    
+    // Set code boxes
+    htmlCode.textContent = post.htmlCode || 'No HTML code provided';
+    cssCode.textContent = post.cssCode || 'No CSS code provided';
+    jsCode.textContent = post.jsCode || 'No JavaScript code provided';
+    
+    // Set demo button
+    demoBtn.href = post.demoLink || '#';
+    demoBtn.style.display = post.demoLink ? 'inline-flex' : 'none';
+    
+    // Update URL
+    history.pushState(null, null, `?id=${post.id}`);
+    
+    postModal.style.display = 'block';
+}
+
+// Upload new post
+function uploadPost() {
+    const imageUrl = document.getElementById('post-image').value;
+    const title = document.getElementById('post-title').value;
+    const description = document.getElementById('post-description').value;
+    const demoLink = document.getElementById('post-demo').value;
+    
+    if (!imageUrl || !title || !description) {
+        alert('Please fill in all required fields!');
+        return;
     }
     
-    // Load upload history
-    function loadUploadHistory() {
-        uploadHistory.innerHTML = '';
-        
-        // Filter posts that would be considered "user's posts" (in a real app, this would filter by user)
-        const userPosts = posts.slice(0, 3); // Just for demo, showing first 3 posts
-        
-        userPosts.forEach(post => {
-            const historyItem = document.createElement('div');
-            historyItem.className = 'history-item';
-            historyItem.setAttribute('data-id', post.id);
-            
-            historyItem.innerHTML = `
-                <div class="history-thumbnail">
-                    <img src="${post.thumbnail}" alt="${post.title}">
-                </div>
-                <div class="history-actions">
-                    <button class="edit-post"><i class="fas fa-edit"></i></button>
-                    <button class="delete-post"><i class="fas fa-trash"></i></button>
-                </div>
-            `;
-            
-            uploadHistory.appendChild(historyItem);
-            
-            // Add edit event
-            historyItem.querySelector('.edit-post').addEventListener('click', function(e) {
-                e.stopPropagation();
-                editPost(post.id);
-            });
-            
-            // Add delete event
-            historyItem.querySelector('.delete-post').addEventListener('click', function(e) {
-                e.stopPropagation();
-                deletePost(post.id);
-            });
-            
-            // Add click event to open post
-            historyItem.addEventListener('click', function() {
-                openPostModal(post.id);
-            });
-        });
-        
-        // Show the form to add new posts
-        addPostForm.style.display = 'flex';
-    }
+    // Extract code from description
+    const htmlCodeMatch = description.match(/<code>([\s\S]*?)<\/code>/i);
+    const cssCodeMatch = description.match(/<code>([\s\S]*?)<\/code>/gi)?.[1];
+    const jsCodeMatch = description.match(/<code>([\s\S]*?)<\/code>/gi)?.[2];
     
-    // Edit post
-    function editPost(postId) {
-        const post = posts.find(p => p.id === postId);
-        if (!post) return;
-        
-        // Fill the form with post data
-        document.getElementById('thumbnail-url').value = post.thumbnail;
-        document.getElementById('post-title').value = post.title;
-        document.getElementById('post-description').value = post.description;
-        document.getElementById('demo-link').value = post.demoLink;
-        
-        // Change the upload button to update
-        uploadPostBtn.textContent = 'Update Post';
-        uploadPostBtn.removeEventListener('click', uploadPostHandler);
-        
-        function updatePostHandler() {
-            const thumbnailUrl = document.getElementById('thumbnail-url').value.trim();
-            const title = document.getElementById('post-title').value.trim();
-            const description = document.getElementById('post-description').value.trim();
-            const demoLink = document.getElementById('demo-link').value.trim();
-            
-            if (!thumbnailUrl || !title || !description || !demoLink) {
-                alert('Please fill all fields');
-                return;
-            }
-            
-            // Update post
-            post.thumbnail = thumbnailUrl;
-            post.title = title;
-            post.description = description;
-            post.demoLink = demoLink;
-            
-            // Reset form
-            document.getElementById('thumbnail-url').value = '';
-            document.getElementById('post-title').value = '';
-            document.getElementById('post-description').value = '';
-            document.getElementById('demo-link').value = '';
-            
-            // Reset button
-            uploadPostBtn.textContent = 'Upload Sekarang';
-            uploadPostBtn.addEventListener('click', uploadPostHandler);
-            
-            // Update UI
-            renderPosts();
-            loadUploadHistory();
-        }
-        
-        uploadPostBtn.addEventListener('click', updatePostHandler);
-    }
-    
-    // Delete post
-    function deletePost(postId) {
-        if (confirm('Are you sure you want to delete this post?')) {
-            posts = posts.filter(p => p.id !== postId);
-            filteredPosts = filteredPosts.filter(p => p.id !== postId);
-            
-            // Update UI
-            renderPosts();
-            loadUploadHistory();
-            
-            // If we're viewing the deleted post, close the modal
-            if (currentPostId === postId) {
-                postModal.style.display = 'none';
-                history.pushState(null, null, window.location.pathname);
-            }
-        }
-    }
-    
-    // Format date
-    function formatDate(dateString) {
-        const options = { year: 'numeric', month: 'long', day: 'numeric' };
-        return new Date(dateString).toLocaleDateString('en-US', options);
-    }
-    
-    // Escape HTML for code display
-    function escapeHtml(unsafe) {
-        return unsafe
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
-    }
-    
-    // Check URL for post ID on page load
-    function checkUrlForPost() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const postId = urlParams.get('id');
-        
-        if (postId) {
-            openPostModal(postId);
-        }
-    }
-    
-    // Copy code to clipboard
-    window.copyCode = function(button) {
-        const codeBox = button.closest('.code-box');
-        const editor = codeBox.querySelector('.CodeMirror');
-        const code = editor.CodeMirror.getValue();
-        
-        navigator.clipboard.writeText(code).then(() => {
-            const originalText = button.innerHTML;
-            button.innerHTML = '<i class="fas fa-check"></i> Copied!';
-            
-            setTimeout(() => {
-                button.innerHTML = originalText;
-            }, 2000);
-        });
+    const newPost = {
+        id: Date.now().toString(),
+        title,
+        description,
+        image: imageUrl,
+        date: new Date().toISOString().split('T')[0],
+        htmlCode: htmlCodeMatch ? htmlCodeMatch[1] : '',
+        cssCode: cssCodeMatch ? cssCodeMatch.replace(/<code>|<\/code>/g, '') : '',
+        jsCode: jsCodeMatch ? jsCodeMatch.replace(/<code>|<\/code>/g, '') : '',
+        demoLink
     };
     
-    // Initial render
-    renderPosts();
-    checkUrlForPost();
+    posts.unshift(newPost); // Add to beginning of array
     
-    // Regular upload handler
-    function uploadPostHandler() {
-        const thumbnailUrl = document.getElementById('thumbnail-url').value.trim();
-        const title = document.getElementById('post-title').value.trim();
-        const description = document.getElementById('post-description').value.trim();
-        const demoLink = document.getElementById('demo-link').value.trim();
-        
-        if (!thumbnailUrl || !title || !description || !demoLink) {
-            alert('Please fill all fields');
-            return;
-        }
-        
-        const newPost = {
-            id: Date.now().toString(),
-            title,
-            thumbnail: thumbnailUrl,
-            description,
-            demoLink,
-            date: new Date().toISOString().split('T')[0]
-        };
-        
-        posts.unshift(newPost);
-        filteredPosts.unshift(newPost);
-        
-        // Clear form
-        document.getElementById('thumbnail-url').value = '';
-        document.getElementById('post-title').value = '';
-        document.getElementById('post-description').value = '';
-        document.getElementById('demo-link').value = '';
-        
-        // Update UI
-        renderPosts();
-        loadUploadHistory();
-        addPostModal.style.display = 'none';
+    // Reset form
+    document.getElementById('post-form').reset();
+    postForm.style.display = 'none';
+    showPostFormBtn.style.display = 'flex';
+    
+    // Update UI
+    renderNewUploads();
+    renderAllPosts();
+    renderHistoryPosts();
+    
+    alert('Post uploaded successfully!');
+}
+
+// Edit post
+function editPost(postId) {
+    const post = posts.find(p => p.id === postId);
+    if (!post) return;
+    
+    // Show form
+    postForm.style.display = 'flex';
+    showPostFormBtn.style.display = 'none';
+    
+    // Fill form with post data
+    document.getElementById('post-image').value = post.image;
+    document.getElementById('post-title').value = post.title;
+    document.getElementById('post-description').value = post.description;
+    document.getElementById('post-demo').value = post.demoLink;
+    
+    // Change upload button text
+    uploadPostBtn.textContent = 'Update Post';
+    
+    // Remove the old post when updating
+    uploadPostBtn.onclick = () => {
+        deletePost(postId);
+        uploadPost();
+    };
+}
+
+// Delete post
+function deletePost(postId) {
+    if (confirm('Are you sure you want to delete this post?')) {
+        posts = posts.filter(post => post.id !== postId);
+        renderNewUploads();
+        renderAllPosts();
+        renderHistoryPosts();
     }
+}
+
+// Copy code to clipboard
+function copyCode(elementId) {
+    const codeElement = document.getElementById(elementId);
+    const text = codeElement.textContent;
     
-    uploadPostBtn.addEventListener('click', uploadPostHandler);
+    navigator.clipboard.writeText(text).then(() => {
+        const copyBtn = codeElement.parentElement.previousElementSibling.querySelector('.copy-btn');
+        copyBtn.innerHTML = '<i class="fas fa-check"></i>';
+        
+        setTimeout(() => {
+            copyBtn.innerHTML = '<i class="far fa-copy"></i>';
+        }, 2000);
+    });
+}
+
+// Format date
+function formatDate(dateString) {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString('en-US', options);
+}
+
+// Check URL for post ID on page load
+function checkUrlForPostId() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const postId = urlParams.get('id');
+    
+    if (postId) {
+        const post = posts.find(p => p.id === postId);
+        if (post) {
+            openPostModal(post);
+        }
+    }
+}
+
+// Initialize the app when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    init();
+    checkUrlForPostId();
 });
