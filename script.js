@@ -1,39 +1,5 @@
-// Sample data for posts
-let posts = [
-    {
-        id: '1',
-        title: 'Responsive Navbar with Burger Menu',
-        description: 'Learn how to create a responsive navbar with burger menu for mobile devices. Perfect for modern websites! <code>const burger = document.querySelector(".burger");</code> <link>[View more tutorials](https://example.com)</link>',
-        image: 'https://via.placeholder.com/800x450?text=Responsive+Navbar',
-        date: '2023-05-15',
-        htmlCode: '<nav class="navbar">\n  <div class="logo">Logo</div>\n  <div class="burger">☰</div>\n  <div class="nav-links">\n    <a href="#">Home</a>\n    <a href="#">About</a>\n  </div>\n</nav>',
-        cssCode: '.navbar {\n  display: flex;\n  justify-content: space-between;\n  padding: 1rem;\n}\n\n.burger {\n  display: none;\n}\n\n@media (max-width: 768px) {\n  .burger {\n    display: block;\n  }\n}',
-        jsCode: 'const burger = document.querySelector(".burger");\nconst navLinks = document.querySelector(".nav-links");\n\nburger.addEventListener("click", () => {\n  navLinks.classList.toggle("active");\n});',
-        demoLink: 'https://example.com/demo1'
-    },
-    {
-        id: '2',
-        title: 'CSS Grid Layout Tutorial',
-        description: 'Master CSS Grid with this comprehensive tutorial. Create complex layouts easily with CSS Grid! <code>.container { display: grid; }</code>',
-        image: 'https://via.placeholder.com/800x450?text=CSS+Grid',
-        date: '2023-05-10',
-        htmlCode: '<div class="container">\n  <div class="item">1</div>\n  <div class="item">2</div>\n  <div class="item">3</div>\n</div>',
-        cssCode: '.container {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  gap: 1rem;\n}\n\n.item {\n  background: #eee;\n  padding: 1rem;\n}',
-        jsCode: '// No JavaScript required for basic grid',
-        demoLink: 'https://example.com/demo2'
-    },
-    {
-        id: '3',
-        title: 'JavaScript Fetch API',
-        description: 'Learn how to use Fetch API to get data from servers. Modern alternative to XMLHttpRequest. <code>fetch("url").then(res => res.json())</code>',
-        image: 'https://via.placeholder.com/800x450?text=Fetch+API',
-        date: '2023-05-05',
-        htmlCode: '<button id="fetch-btn">Fetch Data</button>\n<div id="result"></div>',
-        cssCode: '#result {\n  margin-top: 1rem;\n  padding: 1rem;\n  border: 1px solid #ddd;\n}',
-        jsCode: 'document.getElementById("fetch-btn").addEventListener("click", () => {\n  fetch("https://api.example.com/data")\n    .then(response => response.json())\n    .then(data => {\n      document.getElementById("result").textContent = JSON.stringify(data);\n    });\n});',
-        demoLink: 'https://example.com/demo3'
-    }
-];
+// Database instance
+const db = new PostDB();
 
 // DOM Elements
 const burgerBtn = document.querySelector('.burger-btn');
@@ -58,13 +24,81 @@ const postPasswordInput = document.getElementById('post-password');
 let visiblePosts = 6;
 const postsPerLoad = 6;
 const CORRECT_PASSWORD = 'posting123';
+let posts = [];
+
+// Default profile picture
+const DEFAULT_PROFILE_PIC = 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
+
+// Sample thumbnail images
+const SAMPLE_THUMBNAILS = [
+    'https://i.ibb.co/Y7DRHxMF/code-sample1.jpg',
+    'https://i.ibb.co/0jQ4YyP/code-sample2.jpg',
+    'https://i.ibb.co/5KqJz0B/code-sample3.jpg'
+];
 
 // Initialize the app
-function init() {
-    renderNewUploads();
-    renderAllPosts();
-    setupEventListeners();
-    checkSavedPassword();
+async function init() {
+    try {
+        // Load posts from IndexedDB
+        posts = await db.getAllPosts();
+        
+        // If no posts, add sample data
+        if (posts.length === 0) {
+            await addSamplePosts();
+            posts = await db.getAllPosts();
+        }
+        
+        renderNewUploads();
+        renderAllPosts();
+        setupEventListeners();
+        checkSavedPassword();
+        checkUrlForPostId();
+    } catch (error) {
+        console.error('Initialization error:', error);
+    }
+}
+
+// Add sample posts to database
+async function addSamplePosts() {
+    const samplePosts = [
+        {
+            id: '1',
+            title: 'Responsive Navbar with Burger Menu',
+            description: 'Learn how to create a responsive navbar with burger menu for mobile devices. Perfect for modern websites! <code>const burger = document.querySelector(".burger");</code> <link>[View more tutorials](https://example.com)</link>',
+            image: SAMPLE_THUMBNAILS[0],
+            date: '2023-05-15',
+            htmlCode: '<nav class="navbar">\n  <div class="logo">Logo</div>\n  <div class="burger">☰</div>\n  <div class="nav-links">\n    <a href="#">Home</a>\n    <a href="#">About</a>\n  </div>\n</nav>',
+            cssCode: '.navbar {\n  display: flex;\n  justify-content: space-between;\n  padding: 1rem;\n}\n\n.burger {\n  display: none;\n}\n\n@media (max-width: 768px) {\n  .burger {\n    display: block;\n  }\n}',
+            jsCode: 'const burger = document.querySelector(".burger");\nconst navLinks = document.querySelector(".nav-links");\n\nburger.addEventListener("click", () => {\n  navLinks.classList.toggle("active");\n});',
+            demoLink: 'https://example.com/demo1'
+        },
+        {
+            id: '2',
+            title: 'CSS Grid Layout Tutorial',
+            description: 'Master CSS Grid with this comprehensive tutorial. Create complex layouts easily with CSS Grid! <code>.container { display: grid; }</code>',
+            image: SAMPLE_THUMBNAILS[1],
+            date: '2023-05-10',
+            htmlCode: '<div class="container">\n  <div class="item">1</div>\n  <div class="item">2</div>\n  <div class="item">3</div>\n</div>',
+            cssCode: '.container {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  gap: 1rem;\n}\n\n.item {\n  background: #eee;\n  padding: 1rem;\n}',
+            jsCode: '// No JavaScript required for basic grid',
+            demoLink: 'https://example.com/demo2'
+        },
+        {
+            id: '3',
+            title: 'JavaScript Fetch API',
+            description: 'Learn how to use Fetch API to get data from servers. Modern alternative to XMLHttpRequest. <code>fetch("url").then(res => res.json())</code>',
+            image: SAMPLE_THUMBNAILS[2],
+            date: '2023-05-05',
+            htmlCode: '<button id="fetch-btn">Fetch Data</button>\n<div id="result"></div>',
+            cssCode: '#result {\n  margin-top: 1rem;\n  padding: 1rem;\n  border: 1px solid #ddd;\n}',
+            jsCode: 'document.getElementById("fetch-btn").addEventListener("click", () => {\n  fetch("https://api.example.com/data")\n    .then(response => response.json())\n    .then(data => {\n      document.getElementById("result").textContent = JSON.stringify(data);\n    });\n});',
+            demoLink: 'https://example.com/demo3'
+        }
+    ];
+
+    for (const post of samplePosts) {
+        await db.addPost(post);
+    }
 }
 
 // Set up event listeners
@@ -103,14 +137,23 @@ function setupEventListeners() {
         renderAllPosts();
     });
 
-    // Search input event
+    // Search input event with debounce
+    let searchTimeout;
     searchInput.addEventListener('input', () => {
-        renderAllPosts();
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            renderAllPosts();
+        }, 300);
     });
 
-    // Show post form
+    // Show post form with smooth animation
     showPostFormBtn.addEventListener('click', () => {
+        postForm.style.opacity = '0';
         postForm.style.display = 'flex';
+        postForm.style.transition = 'opacity 0.2s ease';
+        setTimeout(() => {
+            postForm.style.opacity = '1';
+        }, 10);
         showPostFormBtn.style.display = 'none';
     });
 
@@ -202,8 +245,12 @@ function createPostCard(post) {
     postCard.className = 'post-card';
     postCard.dataset.id = post.id;
     
+    // Use placeholder if image fails to load
+    const imgSrc = post.image || SAMPLE_THUMBNAILS[0];
+    const imgHTML = `<img src="${imgSrc}" alt="${post.title}" class="post-thumbnail" onerror="this.src='${SAMPLE_THUMBNAILS[0]}'">`;
+    
     postCard.innerHTML = `
-        <img src="${post.image}" alt="${post.title}" class="post-thumbnail">
+        ${imgHTML}
         <div class="post-info">
             <h3 class="post-title">${post.title}</h3>
             <p class="post-date">Uploaded at ${formatDate(post.date)}</p>
@@ -215,47 +262,57 @@ function createPostCard(post) {
 }
 
 // Render history posts
-function renderHistoryPosts() {
+async function renderHistoryPosts() {
     historyPostsContainer.innerHTML = '';
     
-    if (posts.length === 0) {
-        historyPostsContainer.innerHTML = '<p>No posts uploaded yet.</p>';
-        return;
+    try {
+        const historyPosts = await db.getAllPosts();
+        
+        if (historyPosts.length === 0) {
+            historyPostsContainer.innerHTML = '<p>No posts uploaded yet.</p>';
+            return;
+        }
+        
+        // Sort by date (newest first)
+        const sortedPosts = [...historyPosts].sort((a, b) => new Date(b.date) - new Date(a.date));
+        
+        sortedPosts.forEach(post => {
+            const historyPost = document.createElement('div');
+            historyPost.className = 'history-post';
+            historyPost.dataset.id = post.id;
+            
+            // Use placeholder if image fails to load
+            const imgSrc = post.image || SAMPLE_THUMBNAILS[0];
+            const imgHTML = `<img src="${imgSrc}" alt="${post.title}" class="history-thumbnail" onerror="this.src='${SAMPLE_THUMBNAILS[0]}'">`;
+            
+            historyPost.innerHTML = `
+                <div class="history-actions">
+                    <button class="edit-post"><i class="fas fa-edit"></i></button>
+                    <button class="delete-post"><i class="fas fa-trash"></i></button>
+                </div>
+                ${imgHTML}
+                <div class="history-title">${post.title}</div>
+            `;
+            
+            historyPost.querySelector('.edit-post').addEventListener('click', (e) => {
+                e.stopPropagation();
+                editPost(post.id);
+            });
+            
+            historyPost.querySelector('.delete-post').addEventListener('click', (e) => {
+                e.stopPropagation();
+                deletePost(post.id);
+            });
+            
+            historyPostsContainer.appendChild(historyPost);
+        });
+    } catch (error) {
+        console.error('Error loading history posts:', error);
     }
-    
-    // Sort by date (newest first)
-    const sortedPosts = [...posts].sort((a, b) => new Date(b.date) - new Date(a.date));
-    
-    sortedPosts.forEach(post => {
-        const historyPost = document.createElement('div');
-        historyPost.className = 'history-post';
-        historyPost.dataset.id = post.id;
-        
-        historyPost.innerHTML = `
-            <div class="history-actions">
-                <button class="edit-post"><i class="fas fa-edit"></i></button>
-                <button class="delete-post"><i class="fas fa-trash"></i></button>
-            </div>
-            <img src="${post.image}" alt="${post.title}" class="history-thumbnail">
-            <div class="history-title">${post.title}</div>
-        `;
-        
-        historyPost.querySelector('.edit-post').addEventListener('click', (e) => {
-            e.stopPropagation();
-            editPost(post.id);
-        });
-        
-        historyPost.querySelector('.delete-post').addEventListener('click', (e) => {
-            e.stopPropagation();
-            deletePost(post.id);
-        });
-        
-        historyPostsContainer.appendChild(historyPost);
-    });
 }
 
 // Open post modal
-function openPostModal(post) {
+async function openPostModal(post) {
     const modalTitle = document.getElementById('modal-title');
     const modalDate = document.getElementById('modal-date');
     const modalThumbnail = document.getElementById('modal-thumbnail');
@@ -264,10 +321,19 @@ function openPostModal(post) {
     const htmlCode = document.getElementById('html-code');
     const cssCode = document.getElementById('css-code');
     const jsCode = document.getElementById('js-code');
+    const profilePic = document.querySelector('.profile-pic');
     
     modalTitle.textContent = post.title;
     modalDate.textContent = `Uploaded at ${formatDate(post.date)}`;
-    modalThumbnail.src = post.image;
+    
+    // Set profile picture
+    profilePic.src = DEFAULT_PROFILE_PIC;
+    
+    // Set thumbnail with error handling
+    modalThumbnail.src = post.image || SAMPLE_THUMBNAILS[0];
+    modalThumbnail.onerror = () => {
+        modalThumbnail.src = SAMPLE_THUMBNAILS[0];
+    };
     modalThumbnail.alt = post.title;
     
     // Process description with code and link tags
@@ -297,7 +363,7 @@ function openPostModal(post) {
 }
 
 // Upload new post
-function uploadPost() {
+async function uploadPost() {
     const imageUrl = document.getElementById('post-image').value;
     const title = document.getElementById('post-title').value;
     const description = document.getElementById('post-description').value;
@@ -325,53 +391,103 @@ function uploadPost() {
         demoLink
     };
     
-    posts.unshift(newPost); // Add to beginning of array
-    
-    // Reset form
-    document.getElementById('post-form').reset();
-    postForm.style.display = 'none';
-    showPostFormBtn.style.display = 'flex';
-    
-    // Update UI
-    renderNewUploads();
-    renderAllPosts();
-    renderHistoryPosts();
-    
-    alert('Post uploaded successfully!');
-}
-
-// Edit post
-function editPost(postId) {
-    const post = posts.find(p => p.id === postId);
-    if (!post) return;
-    
-    // Show form
-    postForm.style.display = 'flex';
-    showPostFormBtn.style.display = 'none';
-    
-    // Fill form with post data
-    document.getElementById('post-image').value = post.image;
-    document.getElementById('post-title').value = post.title;
-    document.getElementById('post-description').value = post.description;
-    document.getElementById('post-demo').value = post.demoLink;
-    
-    // Change upload button text
-    uploadPostBtn.textContent = 'Update Post';
-    
-    // Remove the old post when updating
-    uploadPostBtn.onclick = () => {
-        deletePost(postId);
-        uploadPost();
-    };
-}
-
-// Delete post
-function deletePost(postId) {
-    if (confirm('Are you sure you want to delete this post?')) {
-        posts = posts.filter(post => post.id !== postId);
+    try {
+        await db.addPost(newPost);
+        posts.unshift(newPost);
+        
+        document.getElementById('post-form').reset();
+        postForm.style.display = 'none';
+        showPostFormBtn.style.display = 'flex';
+        
         renderNewUploads();
         renderAllPosts();
         renderHistoryPosts();
+        
+        alert('Post uploaded successfully!');
+    } catch (error) {
+        console.error('Error uploading post:', error);
+        alert('Failed to upload post');
+    }
+}
+
+// Edit post
+async function editPost(postId) {
+    try {
+        const post = await db.getPost(postId);
+        if (!post) return;
+        
+        // Show form with animation
+        postForm.style.opacity = '0';
+        postForm.style.display = 'flex';
+        postForm.style.transition = 'opacity 0.2s ease';
+        setTimeout(() => {
+            postForm.style.opacity = '1';
+        }, 10);
+        showPostFormBtn.style.display = 'none';
+        
+        // Fill form with post data
+        document.getElementById('post-image').value = post.image;
+        document.getElementById('post-title').value = post.title;
+        document.getElementById('post-description').value = post.description;
+        document.getElementById('post-demo').value = post.demoLink;
+        
+        // Change upload button text and action
+        uploadPostBtn.textContent = 'Update Post';
+        
+        uploadPostBtn.onclick = async () => {
+            const updatedPost = {
+                ...post,
+                image: document.getElementById('post-image').value,
+                title: document.getElementById('post-title').value,
+                description: document.getElementById('post-description').value,
+                demoLink: document.getElementById('post-demo').value
+            };
+            
+            try {
+                await db.updatePost(updatedPost);
+                
+                // Update local posts array
+                const index = posts.findIndex(p => p.id === postId);
+                if (index !== -1) {
+                    posts[index] = updatedPost;
+                }
+                
+                // Reset form
+                document.getElementById('post-form').reset();
+                postForm.style.display = 'none';
+                showPostFormBtn.style.display = 'flex';
+                uploadPostBtn.textContent = 'Upload Sekarang';
+                
+                // Update UI
+                renderNewUploads();
+                renderAllPosts();
+                renderHistoryPosts();
+                
+                alert('Post updated successfully!');
+            } catch (error) {
+                console.error('Error updating post:', error);
+                alert('Failed to update post');
+            }
+        };
+    } catch (error) {
+        console.error('Error loading post for edit:', error);
+        alert('Failed to load post for editing');
+    }
+}
+
+// Delete post
+async function deletePost(postId) {
+    if (confirm('Are you sure you want to delete this post?')) {
+        try {
+            await db.deletePost(postId);
+            posts = posts.filter(post => post.id !== postId);
+            renderNewUploads();
+            renderAllPosts();
+            renderHistoryPosts();
+        } catch (error) {
+            console.error('Error deleting post:', error);
+            alert('Failed to delete post');
+        }
     }
 }
 
@@ -387,6 +503,8 @@ function copyCode(elementId) {
         setTimeout(() => {
             copyBtn.innerHTML = '<i class="far fa-copy"></i>';
         }, 2000);
+    }).catch(err => {
+        console.error('Failed to copy code:', err);
     });
 }
 
@@ -397,14 +515,18 @@ function formatDate(dateString) {
 }
 
 // Check URL for post ID on page load
-function checkUrlForPostId() {
+async function checkUrlForPostId() {
     const urlParams = new URLSearchParams(window.location.search);
     const postId = urlParams.get('id');
     
     if (postId) {
-        const post = posts.find(p => p.id === postId);
-        if (post) {
-            openPostModal(post);
+        try {
+            const post = await db.getPost(postId);
+            if (post) {
+                openPostModal(post);
+            }
+        } catch (error) {
+            console.error('Error loading post from URL:', error);
         }
     }
 }
@@ -412,5 +534,4 @@ function checkUrlForPostId() {
 // Initialize the app when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     init();
-    checkUrlForPostId();
 });
