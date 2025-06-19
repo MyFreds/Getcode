@@ -137,6 +137,21 @@
         </div>
     </div>
 
+    <script>
+  function loadScript(src, callback) {
+    const script = document.createElement('script');
+    script.src = src;
+    script.onload = () => callback();
+    script.onerror = () => console.error(`Failed to load ${src}`);
+    document.body.appendChild(script);
+  }
+  
+  loadScript('db.js', () => {
+    loadScript('script.js', () => {
+      console.log('All scripts loaded');
+    });
+  });
+</script>
     <script src="script.js"></script>
     <script src="db.js"></script>
 </body>
