@@ -6,7 +6,7 @@ class PostDB {
         this.initializeDB();
     }
 
-    initializeDB() {
+    async initializeDB() {
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(this.dbName, 1);
 
@@ -56,7 +56,11 @@ class PostDB {
             };
 
             request.onerror = (event) => {
-                reject(event.target.error);
+                if (event.target.error.name === 'ConstraintError') {
+                    this.updatePost(post).then(resolve).catch(reject);
+                } else {
+                    reject(event.target.error);
+                }
             };
         });
     }
